@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  mongo-hsh:
+    image: mongo:latest
+    container_name: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root1234
+
+    ports:
+      - 27017:27017
+
+
+  mongo-express:
+    image: mongo-express:latest
+    restart: always
+    ports:
+      - 8081:8081
+
+    depends_on:
+      - mongo-hsh
+
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=root1234
+      - ME_CONFIG_MONGODB_URL=mongodb://root:root1234@mongo:27017
+
+
+
