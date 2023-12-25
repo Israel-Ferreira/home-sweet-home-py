@@ -1,36 +1,36 @@
-from flask import Flask, request, jsonify, Response	
+from flask import Flask, request, jsonify, Response
 
-from bson import json_util, ObjectId
 from bson.errors import InvalidId
 
 from dotenv import load_dotenv
 
-from util import json_has_required_properties, make_error_response
-from models.property_factory import ProperyFactory
+from util import make_error_response
 
-from config.mongodb_connection import connect_in_mongo,load_db_env_vars
+from config.mongodb_connection import connect_in_mongo, load_db_env_vars
+
+from errors import ValidationError, UnprocessableEntityError, NotFoundError
+
+import usecases
 
 
 load_dotenv()
 
 db_env_vars = load_db_env_vars()
 
-print(db_env_vars)
-
 
 app = Flask(__name__)
 
-mongo =  connect_in_mongo(**db_env_vars)
+mongo = connect_in_mongo(**db_env_vars)
 
-db =  mongo["home-sweet-home-db"]
+db = mongo["home-sweet-home-db"]
 
 
-@app.route("/properties")
+@app.get("/properties")
 def list_properties():
-    houses =  json_util.dumps(db.houses.find({}))
+    houses = usecases.get_all(db)
 
-    response = Response(response=houses, status=200,  mimetype="application/json")
-
+    response = Response(response=houses, status=200,
+                        mimetype="application/json")
     return response
 
 
@@ -38,67 +38,39 @@ def list_properties():
 def add_new_property():
     property_received = request.json
 
-    json_contain_required_attrs = json_has_required_properties(property_received)
-
-
-    if not json_contain_required_attrs:
-        return make_error_response("Erro de Validação: Campos Obrigatórios Ausentes no Corpo da Requisição", 400)
-
-    if property_received["title"] is None or property_received["title"] == "":
-        return make_error_response("Erro de Validação: O titulo do Anúncio não deve ficar em branco", 400)
-
-    if property_received["square_footage"] is None or property_received["square_footage"] < 0:
-        return make_error_response("Erro de Validação: a metragem do imovel não deve estar com o valor nulo ou menor que 0", 400)
-
-    if property_received["type"] is None or property_received["type"] == "":
-        return make_error_response("Erro de Validação: O tipo do imóvel não deve estar com o valor nulo ou em branco", 400)
-    
-
     try:
-        property_obj =  ProperyFactory.create_property_object(property_received)
+        result = usecases.insert_house(property_received, db)
 
-        if property_obj is not None:
-            dict_property =  property_obj.to_dict()
-            
-            result =  db.houses.insert_one(dict_property)
+        resource_url = f"http://localhost:9090/properties/{result.inserted_id}"
 
-            print(result.inserted_id)
+        resp = {
+            "msg": "Anúncio Criado com Sucesso",
+            "resource_url": resource_url
+        }
 
-            resource_url =  f"http://localhost:9090/properties/{result.inserted_id}"
-
-            resp =  {
-                "msg": "Anúncio Criado com Sucesso",
-                "resource_url": resource_url
-            }
-
-            return jsonify(resp), 201
-        else:
-            return make_error_response("Erro ao criar o objeto", 422)
+        return jsonify(resp), 201
 
     except ValueError as _:
         return make_error_response("Apartamento Inválido", 400)
 
+    except ValidationError as valid_error:
+        return make_error_response(valid_error.msg, 400)
 
-    
+    except UnprocessableEntityError as unpe_err:
+        return make_error_response(unpe_err.msg, unpe_err.status_code)
 
 
 @app.get("/properties/<property_id>")
-def get_property_by_id(property_id: str):
+def get_house_by_id(property_id: str):
     try:
-        object_id  = {"_id": ObjectId(property_id)}
-    
-        result =  db.houses.find_one(object_id)
-
-        if result is None:
-            return make_error_response("Id não encontrado na base de dados", 404)
-        
-
-        response = Response(response=json_util.dumps(result), status=200, mimetype="application/json", content_type="application/json")
-
-        return  response
-    
+        result = usecases.get_property_by_id(property_id, db)
+        response = Response(response=result, status=200,
+                            mimetype="application/json", content_type="application/json")
+        return response
     except InvalidId:
         return make_error_response("ID Inválido", 400)
+    except NotFoundError as error_404:
+        return make_error_response(error_404.msg, 404)
 
 
 @app.put("/properties/<property_id>")

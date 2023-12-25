@@ -1,7 +1,4 @@
-from models.apartment import Apartment
-from models.property import Property
-
-from models.address import Address
+from models import Address, Apartment, Property
 
 from util import is_a_valid_apartment
 

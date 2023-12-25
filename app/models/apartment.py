@@ -13,10 +13,14 @@ class Apartment(Property):
 
     @property
     def qty_rooms(self):
+        """
+        qty_rooms retorna a quantidade de quartos que o apartamento tem
+        """
         return self.__qty_rooms
 
     @property
     def qty_bathrooms(self):
+        
         return self.__qty_bathrooms
 
     @property
@@ -25,10 +29,11 @@ class Apartment(Property):
 
     @property
     def floor(self):
+        """
+        floor retorna o andar onde o apartamento está localizado
+        """
         return self.__floor
     
-    def apartment_number(self):
-        return self.__apartment_number
     
     def __str__(self):
         return f"Nome: {self.title}, Andar: {self.floor}, Metragem: {self.square_footage} m**2"
