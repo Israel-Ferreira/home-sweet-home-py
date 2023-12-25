@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, Response	
 
 from bson import json_util, ObjectId
+from bson.errors import InvalidId
 
 from dotenv import load_dotenv
 
@@ -83,17 +84,21 @@ def add_new_property():
 
 @app.get("/properties/<property_id>")
 def get_property_by_id(property_id: str):
-    id  = {"_id": ObjectId(property_id)}
+    try:
+        object_id  = {"_id": ObjectId(property_id)}
     
-    result =  db.houses.find_one(id)
+        result =  db.houses.find_one(object_id)
 
-    if result is None:
-        return make_error_response("Id não encontrado na base de dados", 404)
+        if result is None:
+            return make_error_response("Id não encontrado na base de dados", 404)
+        
+
+        response = Response(response=json_util.dumps(result), status=200, mimetype="application/json", content_type="application/json")
+
+        return  response
     
-
-    response = Response(response=json_util.dumps(result), status=200, mimetype="application/json", content_type="application/json")
-
-    return  response
+    except InvalidId:
+        return make_error_response("ID Inválido", 400)
 
 
 @app.put("/properties/<property_id>")
