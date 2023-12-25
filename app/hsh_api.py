@@ -12,9 +12,13 @@ load_dotenv()
 
 db_env_vars = load_db_env_vars()
 
+print(db_env_vars)
+
+
 app = Flask(__name__)
 
 mongo =  connect_in_mongo(**db_env_vars)
+
 db =  mongo["home-sweet-home-db"]
 
 
@@ -51,8 +55,13 @@ def add_new_property():
             
             result =  db.houses.insert_one(dict_property)
 
+            print(result.inserted_id)
+
+            resource_url =  f"http://localhost:9090/properties/{result.inserted_id}"
+
             resp =  {
-                "inserted_id": result.inserted_id
+                "msg": "Anúncio Criado com Sucesso",
+                "resource_url": resource_url
             }
 
             return jsonify(resp), 201

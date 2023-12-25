@@ -1,5 +1,7 @@
+from models.address import Address
+
 class Property:
-    def __init__(self, title,  square_footage, address):
+    def __init__(self, title: str,  square_footage: int, address: Address ):
         self.__title = title
         self.__square_footage = square_footage
         self.__addrees = address
@@ -27,6 +29,7 @@ class Property:
 
     @property
     def address(self):
+        print(type(self.__addrees))
         return self.__addrees
 
     def add_property_photos(self, photo_img):

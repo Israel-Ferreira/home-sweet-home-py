@@ -36,9 +36,9 @@ class Apartment(Property):
 
     def to_dict(self):
         return {
-            "title": self.__title,
-            "address": self.__addrees.to_dict(),
-            "square_footage": self.__square_footage,
+            "title": self.title,
+            "address": self.address.to_dict(),
+            "square_footage": self.square_footage,
             "floor": self.__floor,
             "qty_bathrooms": self.__qty_bathrooms,
             "qty_rooms": self.__qty_rooms,

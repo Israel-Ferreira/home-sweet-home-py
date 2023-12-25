@@ -11,7 +11,9 @@ def connect_in_mongo(host, port, database, user="", password=""):
     else:
         cnstr = f"mongodb://{user}:{password}@{host}:{port}/{database}"
 
-    client =  MongoClient(cnstr)
+    print(cnstr)
+
+    client =  MongoClient(cnstr, authSource="admin")
 
     try:
         client.admin.command("ping")

@@ -1,6 +1,8 @@
 from models.apartment import Apartment
 from models.property import Property
 
+from models.address import Address
+
 from util import is_a_valid_apartment
 
 class ProperyFactory:
@@ -12,7 +14,19 @@ class ProperyFactory:
 
         square_footage = request_json["square_footage"]
 
-        address = request_json["address"]
+        address_obj = request_json["address"]
+
+        address =  Address(
+            address_obj["public_place"],
+            address_obj["number"],
+            address_obj["neighborhood"],
+            address_obj["city"],
+            address_obj["state"],
+            address_obj["country"],
+            address_obj["latitude"],
+            address_obj["longitude"],
+            ""
+        )
         
         if request_json["type"] == "apartment" :
             if is_a_valid_apartment(request_json):
