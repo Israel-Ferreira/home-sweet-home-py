@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, Response	
 
-from bson import json_util
+from bson import json_util, ObjectId
 
 from dotenv import load_dotenv
 
@@ -81,18 +81,27 @@ def add_new_property():
     
 
 
-@app.get("/properties/:property_id")
+@app.get("/properties/<property_id>")
 def get_property_by_id(property_id: str):
+    id  = {"_id": ObjectId(property_id)}
     
-    pass
+    result =  db.houses.find_one(id)
+
+    if result is None:
+        return make_error_response("Id não encontrado na base de dados", 404)
+    
+
+    response = Response(response=json_util.dumps(result), status=200, mimetype="application/json", content_type="application/json")
+
+    return  response
 
 
-@app.put("/properties/:property_id")
+@app.put("/properties/<property_id>")
 def update_announcement(property_id: str):
     pass
 
 
-@app.delete("/properties/:propery_id")
+@app.delete("/properties/<propery_id>")
 def archive_property(property_id: str):
     pass
 
