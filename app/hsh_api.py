@@ -1,4 +1,6 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response	
+
+from bson import json_util
 
 from dotenv import load_dotenv
 
@@ -24,7 +26,11 @@ db =  mongo["home-sweet-home-db"]
 
 @app.route("/properties")
 def list_properties():
-    return []
+    houses =  json_util.dumps(db.houses.find({}))
+
+    response = Response(response=houses, status=200,  mimetype="application/json")
+
+    return response
 
 
 @app.post("/properties")
@@ -77,6 +83,7 @@ def add_new_property():
 
 @app.get("/properties/:property_id")
 def get_property_by_id(property_id: str):
+    
     pass
 
 
