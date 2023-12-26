@@ -1,6 +1,26 @@
 version: "3.8"
 
 services:
+
+  hsh-api:
+    build:
+      context: app
+      dockerfile: Dockerfile
+
+    depends_on:
+      -  mongo-hsh
+
+    environment:
+      - API_MONGO_DB_HOST=mongo-hsh
+      - API_MONGO_DB_PORT=27017
+      - API_MONGO_DB_DATABASE_NAME=home-sweet-home-db
+      - API_MONGO_DB_USER=root
+      - API_MONGO_DB_PASSWORD=root1234
+    
+    ports:
+      - 9090:9090
+
+
   mongo-hsh:
     image: mongo:latest
     container_name: mongo
