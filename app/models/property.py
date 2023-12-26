@@ -1,11 +1,16 @@
 from models.address import Address
 
+
 class Property:
-    def __init__(self, title: str,  square_footage: int, address: Address ):
+
+    """
+    Class Property representa um Imóvel no sistema
+    """
+
+    def __init__(self, title: str,  square_footage: int, address: Address):
         self.__title = title
         self.__square_footage = square_footage
         self.__addrees = address
-        self.__imgs = []
 
     @property
     def title(self):
@@ -29,18 +34,17 @@ class Property:
 
     @property
     def address(self):
+        """
+        address retorna os dados de endereço do imóvel
+        """
+
         print(type(self.__addrees))
         return self.__addrees
-
-    def add_property_photos(self, photo_img):
-        self.__imgs.append(photo_img)
-
 
     def __str__(self):
         pass
 
-
     def to_dict(self):
-        pass
-
-    
+        """
+        to_dict converte os dados presentes no objeto em um dicionario
+        """

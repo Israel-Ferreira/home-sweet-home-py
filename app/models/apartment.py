@@ -4,7 +4,7 @@ from models.address import Address
 
 class Apartment(Property):
 
-    def __init__(self, title: str, square_footage: int, address: Address , qty_bathrooms: int, qty_rooms: int, floor: int, pets_is_allowed=True):
+    def __init__(self, title: str, square_footage: int, address: Address, qty_bathrooms: int, qty_rooms: int, floor: int, pets_is_allowed=True):
         self.__qty_rooms = qty_rooms
         self.__qty_bathrooms = qty_bathrooms
         self.__floor = floor
@@ -20,7 +20,10 @@ class Apartment(Property):
 
     @property
     def qty_bathrooms(self):
-        
+        """
+        qty_bathrooms retorna a quantidade de banheiros que o apartamento tem
+        """
+
         return self.__qty_bathrooms
 
     @property
@@ -33,11 +36,9 @@ class Apartment(Property):
         floor retorna o andar onde o apartamento está localizado
         """
         return self.__floor
-    
-    
+
     def __str__(self):
         return f"Nome: {self.title}, Andar: {self.floor}, Metragem: {self.square_footage} m**2"
-    
 
     def to_dict(self):
         return {
@@ -49,4 +50,3 @@ class Apartment(Property):
             "qty_rooms": self.__qty_rooms,
             "pets_is_allowed": self.__pets_is_allowed,
         }
-    
